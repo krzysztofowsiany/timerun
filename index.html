@@ -5,13 +5,33 @@
 	<link rel="stylesheet" href="style.css" type="text/css" />
 	
 	<script type="text/javascript" src="timerun.js"></script>
+	<script type="text/javascript">
+		var tm;
+		function start()
+		{
+			tm = new TimeRun(20000, 8000, 4); 
+			tm.onLoad();
+			//var d = new Date("11, 21, 2012 19:19:00");
+			tm.addTimePos(new Date("11, 3, 2012 19:00:00").getTime(), 3600, "PRACA");
+			tm.addTimePos(new Date("11, 3, 2012 20:20:00").getTime(), 120, "1");
+			tm.addTimePos(new Date("11, 3, 2012 20:25:00").getTime(), 120, "2");
+			tm.addTimePos(new Date("11, 3, 2012 20:40:00").getTime(), 240, "3");
+			tm.addTimePos(new Date("11, 3, 2012 21:00:00").getTime(), 240, "4");
+			
+			tm.addTimePos(new Date("11, 3, 2012 21:14:00").getTime(), 340, "5");
+			tm.addTimePos(new Date("11, 3, 2012 21:20:00").getTime(), 500, "6");
+			window.setInterval("tm.redraw()", 1000);	
+		}
+
+		window.onload = start;
+	</script>
 	<title>CZAS BIEGNIE PROJEKT SKRYTPU</title>
 </head>
 <body>
 	<header>	
 	</header>
 	<section>
-		<canvas id="timeRun" width="300" height="60" style="border:1px solid blue">	
+		<canvas id="timeRun" width="1100" height="120" style="border:1px solid blue">	
 		</canvas>
 	</section>	
 	<footer>	
