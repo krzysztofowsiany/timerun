@@ -9,18 +9,19 @@
 		var tm;
 		function start()
 		{
-			tm = new TimeRun(20000, 8000, 4); 
-			tm.onLoad();
+			TimeRun(20000, 8000, 4); 
+			TimeRun.onLoad();
 			//var d = new Date("11, 21, 2012 19:19:00");
-			tm.addTimePos(new Date("11, 3, 2012 19:00:00").getTime(), 3600, "PRACA");
-			tm.addTimePos(new Date("11, 3, 2012 20:20:00").getTime(), 120, "1");
-			tm.addTimePos(new Date("11, 3, 2012 20:25:00").getTime(), 120, "2");
-			tm.addTimePos(new Date("11, 3, 2012 20:40:00").getTime(), 240, "3");
-			tm.addTimePos(new Date("11, 3, 2012 21:00:00").getTime(), 240, "4");
+			TimeRun.addTimePos(new Date("11, 4, 2012 9:00:00").getTime(), 3600, "PRACA");
+			TimeRun.addTimePos(new Date("11, 4, 2012 10:20:00").getTime(), 120, "1");
+			TimeRun.addTimePos(new Date("11, 4, 2012 11:25:00").getTime(), 120, "2");
+			TimeRun.addTimePos(new Date("11, 4, 2012 11:40:00").getTime(), 240, "3");
+			TimeRun.addTimePos(new Date("11, 4, 2012 12:00:00").getTime(), 240, "4");
 			
-			tm.addTimePos(new Date("11, 3, 2012 21:14:00").getTime(), 340, "5");
-			tm.addTimePos(new Date("11, 3, 2012 21:20:00").getTime(), 500, "6");
-			window.setInterval("tm.redraw()", 1000);	
+			TimeRun.addTimePos(new Date("11, 4, 2012 12:14:00").getTime(), 340, "5");
+			TimeRun.addTimePos(new Date("11, 4, 2012 13:20:00").getTime(), 500, "6");
+			TimeRun.addTimePos(new Date("11, 4, 2012 14:20:00").getTime(), 500, "7777");
+			window.setInterval("TimeRun.redraw()", 1000);	
 		}
 
 		window.onload = start;

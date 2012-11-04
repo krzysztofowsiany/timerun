@@ -1,148 +1,246 @@
 function TimeRun(history, future, rows)
 {
-	this.history_seconds = history;
-	this.future_seconds = future;
-	this.rows = rows;
-	this.full_size =  history + future;
-	this.width = 100;
-	this.height = 100;	
-	this.pos=1;
-	this.left=50;
-	this.right=50;
-	this.wsk_size=4;
-	this.time_step;
-	this.step = 10;
-	this.top_1;
-	this.top_5;
-	this.ctx;
-	this.currentSeconds;
-	this.curr_row=0;
-	this.row_height=30;
-	this.time_pos = new Array();	
-
-	this.drawLine = function(x1,y1,x2,y2, color)
-	{
-		this.ctx.strokeStyle = color;
-		this.ctx.beginPath();
-		this.ctx.moveTo(x1,y1);
-		this.ctx.lineTo(x2,y2);
-		this.ctx.stroke();
-	}
-
-	this.addTimePos = function(dt,length,name)
-	{
-		this.time_pos.push({dt:dt / 1000, length:length,name:name});	
-	}
-
-	this.drawNumber = function(x,y, txt, color)
-	{
-		this.ctx.strokeStyle = color;
-		this.ctx.font="10px Georgia";
-		this.ctx.strokeText(txt,x,y);
-	}
+	TimeRun.history_seconds = history;
+	TimeRun.future_seconds = future;
+	TimeRun.rows = rows;
+	TimeRun.full_size =  history + future;
+	TimeRun.width = 100;
+	TimeRun.height = 100;	
+	TimeRun.pos=1;
+	TimeRun.left=50;
+	TimeRun.right=50;
+	TimeRun.wsk_size=4;
+	TimeRun.time_step;
+	TimeRun.step = 10;
+	TimeRun.top_1;
+	TimeRun.top_5;
+	TimeRun.ctx;
+	TimeRun.currentSeconds;
+	TimeRun.curr_row=0;
+	TimeRun.row_height=30;
+	TimeRun.time_pos = new Array();	
+	TimeRun.canvas;
 	
-	this.drawText = function(x,y, txt, color, font)
-	{	
-		this.ctx.fillStyle = color;
-		this.ctx.font=font;
-		this.ctx.fillText(txt,x,y);
-	}
+	
+	TimeRun.plus_over = false;
+	TimeRun.minus_over = false;
+};
+	
 
-	this.drawTime = function()
+TimeRun.drawLine = function(x1,y1,x2,y2, color)
+{
+	TimeRun.ctx.strokeStyle = color;
+	TimeRun.ctx.beginPath();
+	TimeRun.ctx.moveTo(x1,y1);
+	TimeRun.ctx.lineTo(x2,y2);
+	TimeRun.ctx.stroke();
+};
+
+TimeRun.addTimePos = function(dt,length,name)
+{
+	TimeRun.time_pos.push({dt:dt / 1000, length:length,name:name});	
+};
+
+TimeRun.drawNumber = function(x,y, txt, color)
+{
+	TimeRun.ctx.strokeStyle = color;
+	TimeRun.ctx.font="10px Georgia";
+	TimeRun.ctx.strokeText(txt,x,y);
+};
+
+TimeRun.drawText = function(x,y, txt, color, font)
+{	
+	TimeRun.ctx.fillStyle = color;
+	TimeRun.ctx.font=font;
+	TimeRun.ctx.fillText(txt,x,y);
+};
+
+TimeRun.drawTime = function()
+{
+	for (x=0;x<TimeRun.full_size;x++)
 	{
-		for (x=0;x<this.full_size;x++)
+		if ((x % TimeRun.step) == 0)
 		{
-			if ((x % this.step) == 0)
-			{
-				this.drawNumber(x * this.time_step + this.pos, this.top_5 - 5,  x, "red");
-				this.drawLine(x * this.time_step + this.pos, this.top_5, x * this.time_step + this.pos, this.height, "black");
-			}
-			else
-				this.drawLine(x * this.time_step + this.pos, this.top_1, x * this.time_step + this.pos, this.height, "black");
+			TimeRun.drawNumber(x * TimeRun.time_step + TimeRun.pos, TimeRun.top_5 - 5,  x, "red");
+			TimeRun.drawLine(x * TimeRun.time_step + TimeRun.pos, TimeRun.top_5, x * TimeRun.time_step + TimeRun.pos, TimeRun.height, "black");
 		}
-	}
-
-	this.drawRect = function(x,y,width,height,color)
-	{
-		this.ctx.strokeStyle=color;
-		this.ctx.strokeRect(x,y,width,height);
-	}
-
-	this.drawFillRect = function(x,y,width,height,color)
-	{
-		this.ctx.fillStyle=color;
-		this.ctx.fillRect(x,y,width,height);
-	}
-	
-	
-	this.drawEvent = function(id)
-	{
-		var start = this.time_pos[id].dt - this.currentSeconds;
-		var x=(this.history_seconds + start) * this.time_step;
-		this.ctx.fillStyle="blue";
-		this.ctx.fillRect(x,this.curr_row*this.row_height,this.time_pos[id].length * this.time_step ,this.row_height);	
-		
-		this.drawText(x,this.curr_row*this.row_height+20,this.time_pos[id].name,"white","20px Georgia");
-		 
-		if (this.curr_row>= this.rows)
-			this.curr_row=0;
 		else
-			this.curr_row++;
-			
+			TimeRun.drawLine(x * TimeRun.time_step + TimeRun.pos, TimeRun.top_1, x * TimeRun.time_step + TimeRun.pos, TimeRun.height, "black");
 	}
-	
-	this.drawEvents = function()
-	{
-		for (i=0;i<this.time_pos.length;i++)
-		{
-			if ((this.time_pos[i].dt>= this.currentSeconds - this.history_seconds)
-				||
-				(this.time_pos[i].dt<= this.currentSeconds + this.future_seconds)
-				)
-					this.drawEvent(i);
-					
-			//alert(this.currentSeconds+":"+this.time_pos[i].dt);
-		}
-	}
-	
-	this.setCurrentDate = function()
-	{
-		var d = new Date();
-		this.currentSeconds = d.getTime() / 1000; 
-	}
-	
-	this.redraw = function()
-	{
-		this.setCurrentDate();
-		this.drawFillRect(0,0,this.width, this.height, "white");
-		//this.drawTime();
-		this.curr_row=0;
-		this.drawEvents();
-		this.drawFillRect(0,0, this.left, this.height, "rgba(128, 128, 128, 0.8)");
-		this.drawRect(this.left, 0, this.width - this.right - this.left,
-			this.height, "rgba(0, 0, 200, 0.5)");
-		this.pos--;
-		
-		if ((this.pos + (this.time_step * this.step)) == 0)
-			this.pos=0;
-	}
+};
 
-	this.onLoad = function ()
-	{
-		var c=document.getElementById("timeRun");
-		this.ctx=c.getContext("2d");	
-		this.width = c.width;
-		this.height = c.height;		
-		this.time_step = this.width / this.full_size;
-		this.row_height = this.height / this.rows; 
-		this.right = this.time_step * this.future_seconds - this.wsk_size /2;
-		this.left = this.time_step * this.history_seconds - this.wsk_size /2;
+TimeRun.drawRect = function(x,y,width,height,color)
+{
+	TimeRun.ctx.strokeStyle=color;
+	TimeRun.ctx.strokeRect(x,y,width,height);
+};
+
+TimeRun.drawFillRect = function(x,y,width,height,color)
+{
+	TimeRun.ctx.fillStyle=color;
+	TimeRun.ctx.fillRect(x,y,width,height);
+};
+
+TimeRun.drawScaleButtons = function()
+{
+	if (TimeRun.plus_over == true)
+		TimeRun.drawFillRect(TimeRun.scale_plus_x, TimeRun.scale_plus_y, 15, 15, "yellow");
+	else
+		TimeRun.drawFillRect(TimeRun.scale_plus_x, TimeRun.scale_plus_y, 15, 15, "green");
 		
-		this.top_5 = Math.floor(this.height * 0.6);
-		this.top_1 = Math.floor(this.height * 0.8);	
-		this.step = this.full_size /10;
-		this.redraw();
+	TimeRun.drawText(TimeRun.scale_plus_x + 2, TimeRun.height-2,"+","white","20px Arial");
+	
+	if (TimeRun.minus_over == true)
+		TimeRun.drawFillRect(TimeRun.scale_minus_x, TimeRun.scale_minus_y, 15, 15, "yellow");		
+	else
+		TimeRun.drawFillRect(TimeRun.scale_minus_x, TimeRun.scale_minus_y, 15, 15, "green");		
+		
+	TimeRun.drawText(TimeRun.scale_minus_x +3, TimeRun.height -3,"-","white","20px Arial");
+};
+
+TimeRun.drawEvent = function(id)
+{
+	var start = TimeRun.time_pos[id].dt - TimeRun.currentSeconds;
+	var x=(TimeRun.history_seconds + start) * TimeRun.time_step;
+	TimeRun.ctx.fillStyle="blue";
+	TimeRun.ctx.fillRect(x,TimeRun.curr_row*TimeRun.row_height,TimeRun.time_pos[id].length * TimeRun.time_step ,TimeRun.row_height);	
+	
+	TimeRun.drawText(x,TimeRun.curr_row*TimeRun.row_height+20,TimeRun.time_pos[id].name,"white","20px Georgia");
+	 
+	if (TimeRun.curr_row>= TimeRun.rows)
+		TimeRun.curr_row=0;
+	else
+		TimeRun.curr_row++;
+		
+};
+
+TimeRun.drawEvents = function()
+{
+	for (i=0;i<TimeRun.time_pos.length;i++)
+	{
+		if ((TimeRun.time_pos[i].dt>= TimeRun.currentSeconds - TimeRun.history_seconds)
+			||
+			(TimeRun.time_pos[i].dt<= TimeRun.currentSeconds + TimeRun.future_seconds)
+			)
+				TimeRun.drawEvent(i);
+				
+		//alert(TimeRun.currentSeconds+":"+TimeRun.time_pos[i].dt);
+	}
+};
+
+TimeRun.setCurrentDate = function()
+{
+	var d = new Date();
+	TimeRun.currentSeconds = d.getTime() / 1000; 
+};
+
+TimeRun.redraw = function()
+{
+	TimeRun.setCurrentDate();
+	TimeRun.drawFillRect(0,0,TimeRun.width, TimeRun.height, "white");
+	//TimeRun.drawTime();
+	TimeRun.curr_row=0;
+	TimeRun.drawEvents();
+	TimeRun.drawScaleButtons();
+	TimeRun.drawFillRect(0,0, TimeRun.left, TimeRun.height, "rgba(128, 128, 128, 0.8)");
+	TimeRun.drawRect(TimeRun.left, 0, TimeRun.width - TimeRun.right - TimeRun.left,
+		TimeRun.height, "rgba(0, 0, 200, 0.5)");
+	TimeRun.pos--;
+	
+	if ((TimeRun.pos + (TimeRun.time_step * TimeRun.step)) == 0)
+		TimeRun.pos=0;
+};
+
+
+
+TimeRun.onLoad = function ()
+{
+	TimeRun.canvas=document.getElementById("timeRun");
+	TimeRun.ctx=TimeRun.canvas.getContext("2d");	
+	TimeRun.canvas.onmousemove= function(e)
+	{
+		var IE = document.all?true:false
+		if (IE) { // grab the x-y pos.s if browser is IE
+			tempX = event.clientX + document.body.scrollLeft
+			tempY = event.clientY + document.body.scrollTop
+		} else {  // grab the x-y pos.s if browser is NS
+			tempX = e.pageX
+			tempY = e.pageY
+		}  
+
+		if (tempX < 0){tempX = 0}
+		if (tempY < 0){tempY = 0}  
+
+		TimeRun.onMouseOver(tempX, tempY);
+
 	}
 	
-}
+	
+	TimeRun.width = TimeRun.canvas.width;
+	TimeRun.height = TimeRun.canvas.height;		
+	TimeRun.time_step = TimeRun.width / TimeRun.full_size;
+	TimeRun.row_height = TimeRun.height / TimeRun.rows; 
+	TimeRun.right = TimeRun.time_step * TimeRun.future_seconds - TimeRun.wsk_size /2;
+	TimeRun.left = TimeRun.time_step * TimeRun.history_seconds - TimeRun.wsk_size /2;
+	TimeRun.scale_plus_x=TimeRun.width - 32;
+	TimeRun.scale_plus_y=TimeRun.height - 16;
+	TimeRun.scale_minus_x=TimeRun.width - 16;
+	TimeRun.scale_minus_y=TimeRun.height - 16;
+	
+	TimeRun.top_5 = Math.floor(TimeRun.height * 0.6);
+	TimeRun.top_1 = Math.floor(TimeRun.height * 0.8);	
+	TimeRun.step = TimeRun.full_size /10;
+	TimeRun.redraw();
+};
+
+
+
+
+
+TimeRun.checkPlusAndMinus = function (x,y)
+{
+
+	if ((x>=TimeRun.scale_plus_x) && (x<=TimeRun.scale_plus_x+16)
+		&& (y>=TimeRun.scale_plus_y) && (y<=TimeRun.scale_plus_y+16)
+	)
+	{
+		TimeRun.plus_over = true;
+		TimeRun.redraw();
+	}
+	else
+		{
+			TimeRun.plus_over = false;
+				
+			TimeRun.redraw();
+			
+		}
+		
+	if ((x>=TimeRun.scale_minus_x) && (x<=TimeRun.scale_minus_x+16)
+		&& (y>=TimeRun.scale_minus_y) && (y<=TimeRun.scale_minus_y+16)
+	)
+	{
+		TimeRun.minus_over = true;
+		TimeRun.redraw();
+	}
+	else
+		{
+			TimeRun.minus_over = false;
+				
+			TimeRun.redraw();
+			
+		}
+	
+	
+};
+	
+
+TimeRun.onMoudeDown = function ()
+{
+	
+};
+
+TimeRun.onMouseOver = function(x,y)
+{
+	TimeRun.checkPlusAndMinus(x,y);
+};
 
