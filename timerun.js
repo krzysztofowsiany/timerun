@@ -20,7 +20,8 @@ function TimeRun(history, future, rows)
 	TimeRun.row_height=30;
 	TimeRun.time_pos = new Array();	
 	TimeRun.canvas;
-	
+	TimeRun.over=false;
+	TimeRun.toDonate=0;
 	
 	TimeRun.plus_over = false;
 	TimeRun.minus_over = false;
@@ -84,14 +85,14 @@ TimeRun.drawFillRect = function(x,y,width,height,color)
 TimeRun.drawScaleButtons = function()
 {
 	if (TimeRun.plus_over == true)
-		TimeRun.drawFillRect(TimeRun.scale_plus_x, TimeRun.scale_plus_y, 15, 15, "yellow");
+		TimeRun.drawFillRect(TimeRun.scale_plus_x, TimeRun.scale_plus_y, 15, 15, "lightgreen");
 	else
 		TimeRun.drawFillRect(TimeRun.scale_plus_x, TimeRun.scale_plus_y, 15, 15, "green");
 		
 	TimeRun.drawText(TimeRun.scale_plus_x + 2, TimeRun.height-2,"+","white","20px Arial");
 	
 	if (TimeRun.minus_over == true)
-		TimeRun.drawFillRect(TimeRun.scale_minus_x, TimeRun.scale_minus_y, 15, 15, "yellow");		
+		TimeRun.drawFillRect(TimeRun.scale_minus_x, TimeRun.scale_minus_y, 15, 15, "lightgreen");		
 	else
 		TimeRun.drawFillRect(TimeRun.scale_minus_x, TimeRun.scale_minus_y, 15, 15, "green");		
 		
@@ -113,6 +114,18 @@ TimeRun.drawEvent = function(id)
 		TimeRun.curr_row++;
 		
 };
+
+TimeRun.drawDontateButton = function ()
+{
+	if (TimeRun.over == true)
+	{
+		if (TimeRun.toDonate> 20)
+			TimeRun.drawFillRect(0,0,100, 20, "gold");
+			
+			TimeRun.toDonate++;
+	}
+	
+}
 
 TimeRun.drawEvents = function()
 {
@@ -142,6 +155,7 @@ TimeRun.redraw = function()
 	TimeRun.curr_row=0;
 	TimeRun.drawEvents();
 	TimeRun.drawScaleButtons();
+	TimeRun.drawDontateButton();
 	TimeRun.drawFillRect(0,0, TimeRun.left, TimeRun.height, "rgba(128, 128, 128, 0.8)");
 	TimeRun.drawRect(TimeRun.left, 0, TimeRun.width - TimeRun.right - TimeRun.left,
 		TimeRun.height, "rgba(0, 0, 200, 0.5)");
@@ -157,6 +171,12 @@ TimeRun.onLoad = function ()
 {
 	TimeRun.canvas=document.getElementById("timeRun");
 	TimeRun.ctx=TimeRun.canvas.getContext("2d");	
+	
+
+	TimeRun.canvas.onmouseover = TimeRun.onMouseOver;
+	
+	TimeRun.canvas.onmouseout = TimeRun.onMouseOut;
+	
 	TimeRun.canvas.onmousemove= function(e)
 	{
 		var IE = document.all?true:false
@@ -171,8 +191,7 @@ TimeRun.onLoad = function ()
 		if (tempX < 0){tempX = 0}
 		if (tempY < 0){tempY = 0}  
 
-		TimeRun.onMouseOver(tempX, tempY);
-
+		TimeRun.onMouseMove(tempX, tempY);
 	}
 	
 	
@@ -200,8 +219,8 @@ TimeRun.onLoad = function ()
 TimeRun.checkPlusAndMinus = function (x,y)
 {
 
-	if ((x>=TimeRun.scale_plus_x) && (x<=TimeRun.scale_plus_x+16)
-		&& (y>=TimeRun.scale_plus_y) && (y<=TimeRun.scale_plus_y+16)
+	if ((x>TimeRun.scale_plus_x) && (x<TimeRun.scale_plus_x+16)
+		&& (y>TimeRun.scale_plus_y) && (y<TimeRun.scale_plus_y+16)
 	)
 	{
 		TimeRun.plus_over = true;
@@ -215,8 +234,8 @@ TimeRun.checkPlusAndMinus = function (x,y)
 			
 		}
 		
-	if ((x>=TimeRun.scale_minus_x) && (x<=TimeRun.scale_minus_x+16)
-		&& (y>=TimeRun.scale_minus_y) && (y<=TimeRun.scale_minus_y+16)
+	if ((x>TimeRun.scale_minus_x) && (x<TimeRun.scale_minus_x+16)
+		&& (y>TimeRun.scale_minus_y) && (y<TimeRun.scale_minus_y+16)
 	)
 	{
 		TimeRun.minus_over = true;
@@ -233,13 +252,24 @@ TimeRun.checkPlusAndMinus = function (x,y)
 	
 };
 	
+TimeRun.onMouseOut = function ()
+{
+	TimeRun.over=false;
+	TimeRun.toDonate = 0;
+};
+
+TimeRun.onMouseOver = function ()
+{
+	TimeRun.over=true;
+	TimeRun.toDonate = 0;
+};
 
 TimeRun.onMoudeDown = function ()
 {
 	
 };
 
-TimeRun.onMouseOver = function(x,y)
+TimeRun.onMouseMove = function(x,y)
 {
 	TimeRun.checkPlusAndMinus(x,y);
 };
